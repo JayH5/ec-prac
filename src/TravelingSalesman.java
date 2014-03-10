@@ -137,11 +137,12 @@ public class TravelingSalesman extends Applet implements Runnable {
     }
 
     // create the initial population of chromosomes
-
-    // TO DO
+    chromosomes = new Chromosome[populationSize];
+    for (int i = 0; i < populationSize; i++) {
+      chromosomes[i] = new Chromosome(cities);
+    }
 
     // start up the background thread
-
     started = true;
 
     generation = 0;
@@ -178,9 +179,10 @@ public class TravelingSalesman extends Applet implements Runnable {
 
 	    g.setColor(Color.white);
 	    for (int i = 0; i < cityCount; i++) {
-	      int icity = chromosomes[0].getCity(i);
+        Chromosome chromosome = chromosomes[0];
+	      int icity = chromosome.getCity(i);
 	      if (i != 0) {
-	        int last = chromosomes[0].getCity(i - 1);
+	        int last = chromosome.getCity(i - 1);
 	        g.drawLine(
 	                  cities[icity].getx(),
 	                  cities[icity].gety(),
@@ -221,6 +223,7 @@ public class TravelingSalesman extends Applet implements Runnable {
 
       Chromosome.sortChromosomes(chromosomes,matingPopulationSize);
 
+      chromosomes[0].calculateCost(cities);
       double cost = chromosomes[0].getCost();
       //dcost = Math.abs(cost-thisCost);
       thisCost = cost;

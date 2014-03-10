@@ -17,6 +17,11 @@ class Chromosome {
    */
   Chromosome(City[] cities) {
     // TO DO
+    int len = cities.length;
+    cityList = new int[len];
+    for (int i = 0; i < len; i++) {
+      cityList[i] = i;
+    }
   }
 
   /**
@@ -55,7 +60,7 @@ class Chromosome {
    * @param list A list of cities.
    */
   void setCities(int[] list) {
-    for ( int i=0;i<cityList.length;i++ ) {
+    for (int i = 0; i < cityList.length; i++) {
       cityList[i] = list[i];
     }
   }
