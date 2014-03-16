@@ -80,7 +80,7 @@ public class TravelingSalesman extends Applet implements Runnable {
    */
   private String status = "";
 
-
+  @Override
   public void init() {
     setLayout(new BorderLayout());
 
@@ -100,6 +100,7 @@ public class TravelingSalesman extends Applet implements Runnable {
 
     // add an action listener for the button
     ctrlStart.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         startThread();
       }
@@ -112,7 +113,7 @@ public class TravelingSalesman extends Applet implements Runnable {
   /**
    * Start the background thread.
    */
-  public void startThread() {
+  private void startThread() {
 	  try {
 		  cityCount = Integer.parseInt(ctrlCities.getText());
 	  } catch (NumberFormatException e) {
@@ -204,13 +205,14 @@ public class TravelingSalesman extends Applet implements Runnable {
    *
    * @param status The status.
    */
-  public void setStatus(String status) {
+  private void setStatus(String status) {
     this.status = status;
   }
 
   /**
    * The main loop for the background thread.
    */
+  @Override
   public void run() {
     double thisCost = 500.0;
 
@@ -241,6 +243,7 @@ public class TravelingSalesman extends Applet implements Runnable {
     setStatus("Solution found after " + generation + " generations.");
   }
 
+  @Override
   public void paint(Graphics g) {
 	  update();
   }
