@@ -32,8 +32,7 @@ class Chromosome implements Comparable<Chromosome> {
   void calculateCost(City[] cities) {
     cost = 0;
     for (int i = 0; i < cityList.length - 1; i++) {
-      double dist = cities[cityList[i]].proximity(cities[cityList[i + 1]]);
-      cost += dist;
+      cost += cities[cityList[i]].proximity(cities[cityList[i + 1]]);
     }
   }
 

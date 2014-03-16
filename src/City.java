@@ -45,7 +45,7 @@ class City {
    * @param cother The other city.
    * @return A distance.
    */
-  public int proximity(City cother) {
+  public double proximity(City cother) {
     return proximity(cother.getx(), cother.gety());
   }
 
@@ -58,10 +58,10 @@ class City {
    * @param y The y coordinate
    * @return The distance.
    */
-  public int proximity(int x, int y) {
+  public double proximity(int x, int y) {
     int xdiff = xpos - x;
     int ydiff = ypos - y;
     // TODO: Save a sqrt today
-    return (int) Math.sqrt(xdiff * xdiff + ydiff * ydiff);
+    return Math.sqrt(xdiff * xdiff + ydiff * ydiff);
   }
 }
