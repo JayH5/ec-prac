@@ -1,4 +1,4 @@
-class Chromosome {
+class Chromosome implements Comparable<Chromosome> {
   /**
    * The list of cities, which are the genes of this
    * chromosome.
@@ -83,6 +83,17 @@ class Chromosome {
   int mate() {
     // TO DO
     return 0;
+  }
+
+  @Override
+  public int compareTo(Chromosome other) {
+    int comp = 0;
+    if (cost > other.cost) {
+      comp = 1;
+    } else if (cost < other.cost) {
+      comp = -1;
+    }
+    return comp;
   }
 
   /**
