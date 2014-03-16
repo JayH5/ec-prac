@@ -2,6 +2,10 @@ import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * This class implements the Traveling Salesman problem
@@ -142,6 +146,9 @@ public class TravelingSalesman extends Applet implements Runnable {
     for (int i = 0; i < populationSize; i++) {
       chromosomes[i] = new Chromosome(cities);
     }
+    Arrays.sort(chromosomes);
+
+    matingPopulationSize = 100;
 
     // start up the background thread
     started = true;
@@ -218,24 +225,55 @@ public class TravelingSalesman extends Applet implements Runnable {
 
     update();
 
-    while (generation < 1000) {
-      generation++;
+    final int n = populationSize;
+    final float inversePop = 1.0f / n;
+    final float nMinus = 0.5f;
+    final float nPlus = 2 - nMinus;
+    final float nDiff = nPlus - nMinus;
 
-      // TODO
+    List<Integer> parentPool = new ArrayList<Integer>();
 
-      Chromosome.sortChromosomes(chromosomes,matingPopulationSize);
+    for (; generation <= 1000; generation++) {
+      // Linear ranking parent slection
+      parentPool.clear();
+      for (int i = 1; i < n; i++) {
+        float probability = inversePop * (nMinus + nDiff * (i - 1) / (n - 1));
+        if (Math.random() <= probability) {
+          parentPool.add(n - i); // ith best
+        }
+      }
 
-      chromosomes[0].calculateCost(cities);
-      double cost = chromosomes[0].getCost();
-      //dcost = Math.abs(cost-thisCost);
-      thisCost = cost;
+      //System.out.println("Parent pool size= " + parentPool.size());
 
+      // Iterate through pairs of parents, recombine each pair and mutate children
+      for (int i = 0, len = parentPool.size() - 1; i < len; i += 2) {
+        int parent1Index = parentPool.get(i);
+        int parent2Index = parentPool.get(i + 1);
+
+        Chromosome parent1 = chromosomes[parent1Index];
+        Chromosome parent2 = chromosomes[parent2Index];
+
+        // Create and mutate children
+        parent1.crossover(parent2);
+        if (Math.random() <= 0.8f) {
+          parent1.mutate();
+        }
+        parent1.calculateCost(cities);
+
+        if (Math.random() <= 0.8f) {
+          parent2.mutate();
+        }
+        parent2.calculateCost(cities);
+      }
+
+      Arrays.sort(chromosomes);
+      thisCost = chromosomes[0].getCost();
 
       NumberFormat nf = NumberFormat.getInstance();
       nf.setMinimumFractionDigits(2);
       nf.setMinimumFractionDigits(2);
 
-      setStatus("Generation "+generation+" Cost "+(int)thisCost);
+      setStatus("Generation " + generation + " Cost " + (int) thisCost);
 
       update();
 

@@ -1,3 +1,9 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+
 class Chromosome implements Comparable<Chromosome> {
   /**
    * The list of cities, which are the genes of this
@@ -12,16 +18,36 @@ class Chromosome implements Comparable<Chromosome> {
   protected double cost;
 
   /**
+   * Class-wide random number generator seeded with current time.
+   */
+  private static final Random RAND = new Random(System.currentTimeMillis());
+
+  private static final float CHANCE_POSITION_SWAP = .02f;
+
+  /**
    * @param cities The order that this chromosome would
    * visit the cities.
    */
   Chromosome(City[] cities) {
-    // TO DO
+    // Initialize with random ordering of cities
+    // For some reason Collections.shuffle(Arrays.asList(cityList)) is not working :(
     int len = cities.length;
+    List<Integer> list = new ArrayList<Integer>(len);
+    for (int i = 0; i < len; i++) {
+      list.add(i);
+    }
+    Collections.shuffle(list, RAND);
+
     cityList = new int[len];
     for (int i = 0; i < len; i++) {
-      cityList[i] = i;
+      cityList[i] = list.get(i);
     }
+
+    calculateCost(cities);
+  }
+
+  private Chromosome(int[] cityList) {
+    this.cityList = cityList;
   }
 
   /**
@@ -74,47 +100,84 @@ class Chromosome implements Comparable<Chromosome> {
     cityList[index] = value;
   }
 
-  /*
-   *
-   * mate: Variation (cross-over and/or mutation method)
-   *
+  /** Crossover recombination using the Order Crossover operator. */
+  public void crossover(Chromosome parent2) {
+    int len = cityList.length;
+
+    // Choose a crossover segment between two points
+    int startPos = RAND.nextInt(len);
+    int endPos = RAND.nextInt(len);
+
+    if (startPos > endPos) {
+      int temp = endPos;
+      endPos = startPos;
+      startPos = temp;
+    }
+
+    int[] child1 = orderCrossover(cityList, parent2.cityList, startPos, endPos);
+    int[] child2 = orderCrossover(parent2.cityList, cityList, startPos, endPos);
+    setCities(child1);
+    parent2.setCities(child2);
+  }
+
+  /**
+   * Order crossover (OX-1)
+   * A portion of one parent is mapped to a portion of the other parent. From
+   * the replaced portion on, the rest is filled up by the remaining genes,
+   * where already present genes are omitted and the order is preserved.
+   * NOTE: parent1.length == parent2.length AND startPos <= endPos
    */
-  int mate() {
-    // TO DO
-    return 0;
+  private static int[] orderCrossover(int[] parent1, int[] parent2, int startPos, int endPos) {
+    final int len = parent1.length;
+    // Copy in the points of the segment from parent 1
+    int[] child = new int[len];
+    for (int i = startPos; i < endPos; i++) {
+      child[i] = parent1[i];
+    }
+
+    // Copy in remaining points from parent 2
+    int insertPos = 0;
+    outer:
+    for (int i = 0; i < len; i++) {
+      // Skip past those points copied from parent 1
+      if (insertPos == startPos) {
+        insertPos = endPos;
+      }
+
+      // Try copy in a point from parent 2
+      int element = parent2[i];
+      // Check if point is already in those copied from parent 1
+      for (int j = startPos; j < endPos; j++) {
+        if (child[j] == element) {
+          continue outer;
+        }
+      }
+
+      // If point not in child, add it and increment pointer to next insertion
+      child[insertPos] = element;
+      insertPos++;
+    }
+    return child;
+  }
+
+  /** Mutates the chromosome by randomly swapping two city indices. */
+  public void mutate() {
+    int len = cityList.length;
+    int p1 = RAND.nextInt(len);
+    int p2 = RAND.nextInt(len);
+    int temp = cityList[p1];
+    cityList[p1] = cityList[p2];
+    cityList[p2] = temp;
   }
 
   @Override
   public int compareTo(Chromosome other) {
-    int comp = 0;
-    if (cost > other.cost) {
-      comp = 1;
-    } else if (cost < other.cost) {
-      comp = -1;
-    }
-    return comp;
+    return Double.compare(cost, other.cost);
   }
 
-  /**
-   * Sort the chromosomes by their cost.
-   *
-   * @param chromosomes An array of chromosomes to sort.
-   * @param num How much of the chromosome list to sort.
-   */
-  public static void sortChromosomes(Chromosome[] chromosomes, int num) {
-    Chromosome ctemp;
-    boolean swapped = true;
-    while (swapped) {
-      swapped = false;
-      for (int i = 0; i < num - 1; i++) {
-        if (chromosomes[i].getCost() > chromosomes[i + 1].getCost()) {
-          ctemp = chromosomes[i];
-          chromosomes[i] = chromosomes[i + 1];
-          chromosomes[i + 1] = ctemp;
-          swapped = true;
-        }
-      }
-    }
+  @Override
+  public String toString() {
+    return "Chromosome {" + Arrays.toString(cityList) + "} with cost = " + cost;
   }
 
 }
