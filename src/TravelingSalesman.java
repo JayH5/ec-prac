@@ -243,7 +243,7 @@ public class TravelingSalesman extends Applet implements Runnable {
       while (parentPool.size() < MIN_PARENT_POOL_SIZE) {
         for (int i = 1; i <= n; i++) {
           float probability = inversePop * (nMinus + nDiff * (i - 1) / (n - 1));
-          if (random.nextFloat(); <= probability) {
+          if (random.nextFloat() <= probability) {
             parentPool.add(n - i); // ith best
           }
         }
