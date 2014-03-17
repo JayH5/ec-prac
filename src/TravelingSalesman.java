@@ -88,6 +88,7 @@ public class TravelingSalesman extends Applet implements Runnable {
   private final Random random = new Random(System.currentTimeMillis());
 
   private static final int MIN_PARENT_POOL_SIZE = 20;
+  private static final int ELITISM = 2;
 
   @Override
   public void init() {
@@ -241,7 +242,7 @@ public class TravelingSalesman extends Applet implements Runnable {
     for (; generation <= 1000; generation++) {
       parentPool.clear();
       while (parentPool.size() < MIN_PARENT_POOL_SIZE) {
-        for (int i = 1; i <= n; i++) {
+        for (int i = 1; i <= n - ELITISM; i++) {
           float probability = inversePop * (nMinus + nDiff * (i - 1) / (n - 1));
           if (random.nextFloat() <= probability) {
             parentPool.add(n - i); // ith best

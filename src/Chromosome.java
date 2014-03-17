@@ -22,7 +22,7 @@ class Chromosome implements Comparable<Chromosome> {
   /**
    * Chance that a given child will be mutated.
    */
-  private static final float CHANCE_MUTATION = .2f;
+  private static final float CHANCE_MUTATION = .6f;
 
   /**
    * @param cities The order that this chromosome would
