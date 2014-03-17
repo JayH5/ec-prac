@@ -254,15 +254,8 @@ public class TravelingSalesman extends Applet implements Runnable {
         Chromosome parent2 = chromosomes[parent2Index];
 
         // Create and mutate children
-        parent1.crossover(parent2);
-        if (Math.random() <= 0.8f) {
-          parent1.mutate();
-        }
+        Chromosome.mate(parent1, parent2);
         parent1.calculateCost(cities);
-
-        if (Math.random() <= 0.8f) {
-          parent2.mutate();
-        }
         parent2.calculateCost(cities);
       }
 

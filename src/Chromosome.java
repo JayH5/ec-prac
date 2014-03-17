@@ -19,7 +19,10 @@ class Chromosome implements Comparable<Chromosome> {
    */
   private static final Random RNG = new Random(System.currentTimeMillis());
 
-  private static final float CHANCE_POSITION_SWAP = .02f;
+  /**
+   * Chance that a given child will be mutated.
+   */
+  private static final float CHANCE_MUTATION = .2f;
 
   /**
    * @param cities The order that this chromosome would
@@ -92,6 +95,11 @@ class Chromosome implements Comparable<Chromosome> {
     }
   }
 
+  /** Get the size of the genome (size of city list). */
+  int size() {
+    return cityList.length;
+  }
+
   /**
    * Set the index'th city in the city list.
    *
@@ -102,23 +110,40 @@ class Chromosome implements Comparable<Chromosome> {
     cityList[index] = value;
   }
 
-  /** Crossover recombination using the Order Crossover operator. */
-  public void crossover(Chromosome parent2) {
-    int len = cityList.length;
+  /**
+   * Perform crossover and mutation on two parent chromosomes. Mutates the
+   * parent chromosomes (children replace parents directly).
+   */
+  public static void mate(Chromosome parent1, Chromosome parent2) {
+    crossover(parent1, parent2);
+    if (RNG.nextFloat() <= CHANCE_MUTATION) {
+      parent1.mutate();
+    }
+    if (RNG.nextFloat() <= CHANCE_MUTATION) {
+      parent2.mutate();
+    }
+  }
+
+  /**
+   * Crossover recombination using the Order Crossover operator. Parents are
+   * replaced by their children.
+   */
+  static void crossover(Chromosome parent1, Chromosome parent2) {
+    int len = parent1.size();
 
     // Choose a crossover segment between two points
     int startPos = RNG.nextInt(len);
     int endPos = RNG.nextInt(len);
 
     if (startPos > endPos) {
-      int temp = endPos;
+      int tmp = endPos;
       endPos = startPos;
-      startPos = temp;
+      startPos = tmp;
     }
 
-    int[] child1 = orderCrossover(cityList, parent2.cityList, startPos, endPos);
-    int[] child2 = orderCrossover(parent2.cityList, cityList, startPos, endPos);
-    setCities(child1);
+    int[] child1 = orderCrossover(parent1.cityList, parent2.cityList, startPos, endPos);
+    int[] child2 = orderCrossover(parent2.cityList, parent1.cityList, startPos, endPos);
+    parent1.setCities(child1);
     parent2.setCities(child2);
   }
 
