@@ -1,7 +1,4 @@
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Random;
 
 class Chromosome implements Comparable<Chromosome> {
@@ -20,7 +17,7 @@ class Chromosome implements Comparable<Chromosome> {
   /**
    * Class-wide random number generator seeded with current time.
    */
-  private static final Random RAND = new Random(System.currentTimeMillis());
+  private static final Random RNG = new Random(System.currentTimeMillis());
 
   private static final float CHANCE_POSITION_SWAP = .02f;
 
@@ -32,18 +29,23 @@ class Chromosome implements Comparable<Chromosome> {
     // Initialize with random ordering of cities
     // For some reason Collections.shuffle(Arrays.asList(cityList)) is not working :(
     int len = cities.length;
-    List<Integer> list = new ArrayList<Integer>(len);
-    for (int i = 0; i < len; i++) {
-      list.add(i);
-    }
-    Collections.shuffle(list, RAND);
-
     cityList = new int[len];
     for (int i = 0; i < len; i++) {
-      cityList[i] = list.get(i);
+      cityList[i] = i;
+    }
+
+    // Shuffle the list
+    for (int i = len; i > 1; i--) {
+      swap(cityList, i - 1, RNG.nextInt(i));
     }
 
     calculateCost(cities);
+  }
+
+  private static void swap(int[] arr, int i, int j) {
+    int tmp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = tmp;
   }
 
   private Chromosome(int[] cityList) {
@@ -105,8 +107,8 @@ class Chromosome implements Comparable<Chromosome> {
     int len = cityList.length;
 
     // Choose a crossover segment between two points
-    int startPos = RAND.nextInt(len);
-    int endPos = RAND.nextInt(len);
+    int startPos = RNG.nextInt(len);
+    int endPos = RNG.nextInt(len);
 
     if (startPos > endPos) {
       int temp = endPos;
@@ -163,11 +165,7 @@ class Chromosome implements Comparable<Chromosome> {
   /** Mutates the chromosome by randomly swapping two city indices. */
   public void mutate() {
     int len = cityList.length;
-    int p1 = RAND.nextInt(len);
-    int p2 = RAND.nextInt(len);
-    int temp = cityList[p1];
-    cityList[p1] = cityList[p2];
-    cityList[p2] = temp;
+    swap(cityList, RNG.nextInt(len), RNG.nextInt(len));
   }
 
   @Override
@@ -177,7 +175,7 @@ class Chromosome implements Comparable<Chromosome> {
 
   @Override
   public String toString() {
-    return "Chromosome {" + Arrays.toString(cityList) + "} with cost = " + cost;
+    return "Chromosome " + Arrays.toString(cityList) + " with cost = " + cost;
   }
 
 }
