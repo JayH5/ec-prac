@@ -2,9 +2,11 @@ import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
@@ -238,6 +240,7 @@ public class TravelingSalesman extends Applet implements Runnable {
     final float nDiff = nPlus - nMinus;
 
     Set<Integer> parentPool = new HashSet<Integer>();
+    List<Chromosome> childPool = new ArrayList<Chromosome>();
 
     for (; generation <= 1000; generation++) {
       parentPool.clear();
@@ -253,17 +256,31 @@ public class TravelingSalesman extends Applet implements Runnable {
       //System.out.println("Parent pool size= " + parentPool.size());
 
       // Iterate through parent pool, choose pairs and perform crossover/mutation
+      childPool.clear();
       Chromosome parent1 = null;
       for (Integer index : parentPool) {
         if (parent1 == null) {
           parent1 = chromosomes[index];
         } else {
           Chromosome parent2 = chromosomes[index];
-          Chromosome.mate(parent1, parent2);
-          parent1.calculateCost(cities);
-          parent2.calculateCost(cities);
+          Chromosome.Children children = Chromosome.mate(parent1, parent2);
+          children.calculateCost(cities);
+
+          // Add children and parents to pool
+          childPool.add(children.child1);
+          childPool.add(children.child2);
+          childPool.add(parent1);
+          childPool.add(parent2);
+
           parent1 = null;
         }
+      }
+
+      // Sort children and replace parents where children better
+      Collections.sort(childPool);
+      int pos = 0;
+      for (Integer index : parentPool) {
+        chromosomes[index] = childPool.get(pos++);
       }
 
       Arrays.sort(chromosomes);

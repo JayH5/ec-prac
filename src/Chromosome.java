@@ -111,20 +111,18 @@ class Chromosome implements Comparable<Chromosome> {
   }
 
   /**
-   * Perform crossover and mutation on two parent chromosomes. Mutates the
-   * parent chromosomes (children replace parents directly).
+   * Perform crossover with two parents and mutate the children.
    */
-  public static void mate(Chromosome parent1, Chromosome parent2) {
-    crossover(parent1, parent2);
-    parent1.mutate();
-    parent2.mutate();
+  public static Children mate(Chromosome parent1, Chromosome parent2) {
+    Children children = crossover(parent1, parent2);
+    children.mutate();
+    return children;
   }
 
   /**
-   * Crossover recombination using the Order Crossover operator. Parents are
-   * replaced by their children.
+   * Crossover recombination using the Order Crossover operator.
    */
-  static void crossover(Chromosome parent1, Chromosome parent2) {
+  static Children crossover(Chromosome parent1, Chromosome parent2) {
     int len = parent1.size();
 
     // Choose a crossover segment between two points
@@ -139,8 +137,7 @@ class Chromosome implements Comparable<Chromosome> {
 
     int[] child1 = orderCrossover(parent1.cityList, parent2.cityList, startPos, endPos);
     int[] child2 = orderCrossover(parent2.cityList, parent1.cityList, startPos, endPos);
-    parent1.setCities(child1);
-    parent2.setCities(child2);
+    return new Children(child1, child2);
   }
 
   /**
@@ -199,6 +196,26 @@ class Chromosome implements Comparable<Chromosome> {
   @Override
   public String toString() {
     return "Chromosome " + Arrays.toString(cityList) + " with cost = " + cost;
+  }
+
+  static class Children {
+    final Chromosome child1;
+    final Chromosome child2;
+
+    Children(int[] child1, int[] child2) {
+      this.child1 = new Chromosome(child1);
+      this.child2 = new Chromosome(child2);
+    }
+
+    void mutate() {
+      child1.mutate();
+      child2.mutate();
+    }
+
+    void calculateCost(City[] cities) {
+      child1.calculateCost(cities);
+      child2.calculateCost(cities);
+    }
   }
 
 }
