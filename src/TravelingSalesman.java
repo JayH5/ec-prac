@@ -2,10 +2,11 @@ import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.*;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
 
 /**
  * This class implements the Traveling Salesman problem
@@ -83,6 +84,10 @@ public class TravelingSalesman extends Applet implements Runnable {
    * The current status, which is displayed just above the controls.
    */
   private String status = "";
+
+  private final Random random = new Random(System.currentTimeMillis());
+
+  private static final int MIN_PARENT_POOL_SIZE = 20;
 
   @Override
   public void init() {
@@ -231,32 +236,33 @@ public class TravelingSalesman extends Applet implements Runnable {
     final float nPlus = 2 - nMinus;
     final float nDiff = nPlus - nMinus;
 
-    List<Integer> parentPool = new ArrayList<Integer>();
+    Set<Integer> parentPool = new HashSet<Integer>();
 
     for (; generation <= 1000; generation++) {
-      // Linear ranking parent slection
       parentPool.clear();
-      for (int i = 1; i < n; i++) {
-        float probability = inversePop * (nMinus + nDiff * (i - 1) / (n - 1));
-        if (Math.random() <= probability) {
-          parentPool.add(n - i); // ith best
+      while (parentPool.size() < MIN_PARENT_POOL_SIZE) {
+        for (int i = 1; i <= n; i++) {
+          float probability = inversePop * (nMinus + nDiff * (i - 1) / (n - 1));
+          if (random.nextFloat(); <= probability) {
+            parentPool.add(n - i); // ith best
+          }
         }
       }
 
       //System.out.println("Parent pool size= " + parentPool.size());
 
-      // Iterate through pairs of parents, recombine each pair and mutate children
-      for (int i = 0, len = parentPool.size() - 1; i < len; i += 2) {
-        int parent1Index = parentPool.get(i);
-        int parent2Index = parentPool.get(i + 1);
-
-        Chromosome parent1 = chromosomes[parent1Index];
-        Chromosome parent2 = chromosomes[parent2Index];
-
-        // Create and mutate children
-        Chromosome.mate(parent1, parent2);
-        parent1.calculateCost(cities);
-        parent2.calculateCost(cities);
+      // Iterate through parent pool, choose pairs and perform crossover/mutation
+      Chromosome parent1 = null;
+      for (Integer index : parentPool) {
+        if (parent1 == null) {
+          parent1 = chromosomes[index];
+        } else {
+          Chromosome parent2 = chromosomes[index];
+          Chromosome.mate(parent1, parent2);
+          parent1.calculateCost(cities);
+          parent2.calculateCost(cities);
+          parent1 = null;
+        }
       }
 
       Arrays.sort(chromosomes);

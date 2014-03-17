@@ -116,12 +116,8 @@ class Chromosome implements Comparable<Chromosome> {
    */
   public static void mate(Chromosome parent1, Chromosome parent2) {
     crossover(parent1, parent2);
-    if (RNG.nextFloat() <= CHANCE_MUTATION) {
-      parent1.mutate();
-    }
-    if (RNG.nextFloat() <= CHANCE_MUTATION) {
-      parent2.mutate();
-    }
+    parent1.mutate();
+    parent2.mutate();
   }
 
   /**
@@ -189,8 +185,10 @@ class Chromosome implements Comparable<Chromosome> {
 
   /** Mutates the chromosome by randomly swapping two city indices. */
   public void mutate() {
-    int len = cityList.length;
-    swap(cityList, RNG.nextInt(len), RNG.nextInt(len));
+    if (RNG.nextFloat() <= CHANCE_MUTATION) {
+      int len = cityList.length;
+      swap(cityList, RNG.nextInt(len), RNG.nextInt(len));
+    }
   }
 
   @Override
