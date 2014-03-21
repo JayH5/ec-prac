@@ -89,7 +89,7 @@ public class TravelingSalesman extends Applet implements Runnable {
 
   private final Random random = new Random(System.currentTimeMillis());
 
-  private static final int MIN_PARENT_POOL_SIZE = 500;
+  private static final int MIN_PARENT_POOL_SIZE = 130;
   private static final int ELITISM = 0;
 
   @Override
