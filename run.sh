@@ -1,2 +1,5 @@
-#!/bin/sh
-appletviewer EA-TSP.htm
+#!/bin/bash
+if [ "$(uname)" == "Darwin" ]; then
+  EXEC='/usr/libexec/java_home -v 1.7.0 --exec'
+fi
+$EXEC appletviewer EA-TSP.htm

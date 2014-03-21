@@ -1,3 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 mkdir -p bin
-javac -d bin -cp 'libs/*' src/*
+if [ "$(uname)" == "Darwin" ]; then
+  EXEC='/usr/libexec/java_home -v 1.7.0 --exec'
+fi
+$EXEC javac -d bin -cp 'libs/*' src/*
