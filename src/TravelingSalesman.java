@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * This class implements the Traveling Salesman problem
@@ -87,6 +88,8 @@ public class TravelingSalesman extends Applet implements Runnable {
    */
   private String status = "";
 
+  private ArrayBlockingQueue<Double> convergenceHistory;
+
   private final Random random = new Random(System.currentTimeMillis());
 
   private static final int MIN_PARENT_POOL_SIZE = 130;
@@ -148,6 +151,8 @@ public class TravelingSalesman extends Applet implements Runnable {
         (int) (Math.random() * (getBounds().width - 10)),
         (int) (Math.random() * (bottom - 10)));
     }
+
+    convergenceHistory = new ArrayBlockingQueue<Double>(100);
 
     // create the initial population of chromosomes
     chromosomes = new Chromosome[populationSize];
@@ -290,6 +295,31 @@ public class TravelingSalesman extends Applet implements Runnable {
       nf.setMinimumFractionDigits(2);
       nf.setMinimumFractionDigits(2);
 
+      //convergence detection
+      try {
+          if(convergenceHistory.remainingCapacity() == 0)convergenceHistory.take();
+      } catch(InterruptedException e) {
+          throw new Error("Zomg!");
+      }
+      convergenceHistory.add(thisCost);
+      if(convergenceHistory.remainingCapacity() == 0){
+          double sum = 0;
+          for(double i : convergenceHistory) {
+              sum+=i;
+          }
+          double avg = sum/convergenceHistory.size();
+          double sumOfSquares = -1;
+          for(double i : convergenceHistory) {
+              double diff = Math.abs(i - avg);
+              sumOfSquares += diff * diff;
+          }
+          double stdDev = Math.sqrt(sumOfSquares);
+          if(stdDev < 50) {
+              setStatus("Converged at generation " + generation);
+              update();
+              break;
+          }
+      }
       setStatus("Generation " + generation + " Cost " + (int) thisCost);
 
       update();
