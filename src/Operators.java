@@ -14,6 +14,40 @@ public final class Operators {
   }
 
   /**
+   * Rotates the elements in the specified array by the specified distance.
+   * Adapted from the method of the same name in java.util.Collections but for
+   * int[] rather than List<T>.
+   */
+  public static void rotate(int[] arr, int distance) {
+    int len = arr.length;
+    if (len == 0) {
+      return;
+    }
+    distance = distance % len;
+    if (distance < 0) {
+      distance += len;
+    }
+    if (distance == 0) {
+      return;
+    }
+
+    for (int cycleStart = 0, nMoved = 0; nMoved != len; cycleStart++) {
+      int displaced = arr[cycleStart];
+      int i = cycleStart;
+      do {
+        i += distance;
+        if (i >= len) {
+          i -= len;
+        }
+        int tmp = arr[i];
+        arr[i] = displaced;
+        displaced = tmp;
+        nMoved++;
+      } while (i != cycleStart);
+    }
+  }
+
+  /**
    * Order crossover (OX-1)
    * A portion of one parent is mapped to a portion of the other parent. From
    * the replaced portion on, the rest is filled up by the remaining genes,
