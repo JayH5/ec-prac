@@ -1,4 +1,13 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+
 public final class Operators {
+
+  private static final Random RNG = new Random(System.currentTimeMillis());
+
+  private static int[][] adjacencyMatrix;
 
   public static void swap(int[] arr, int i, int j) {
     int tmp = arr[i];
@@ -85,6 +94,177 @@ public final class Operators {
       insertPos++;
     }
     return child;
+  }
+
+
+  ////////////////////////
+  // EDGE RECOMBINATION //
+  ////////////////////////
+
+  /**
+   * Edge recombination! Read the wiki:
+   * http://en.wikipedia.org/wiki/Edge_recombination_operator
+   * NOTE: parent1.length == parent2.length AND must be greater than 0
+   * Implementation detail: -1 is used to signify a deleted or unset node.
+   */
+  public static int[] edgeRecombination(int[] parent1, int[] parent2) {
+    int len = parent1.length;
+
+    // Allocate the adjacency matrix
+    int[][] matrix = getAdjacencyMatrixInstance(len);
+
+    // Fill with adjacent nodes
+    fillAdjacencyMatrix(matrix, parent1, parent2);
+
+    // Create union of adjacent nodes by marking duplicates as -1
+    removeDuplicateAdjacentNodes(matrix);
+
+    // Build the child path
+    int[] child = new int[len];
+    Arrays.fill(child, -1); // Since 0 is a valid node, fill with -1
+    int node = parent1[0];
+    for (int i = 0; i < len - 1; i++) {
+      child[i] = node;
+      removeFromAllNeighbours(matrix, node);
+
+      if (hasNeighbours(matrix[node])) {
+        node = neighbourWithFewestNeigbours(matrix, node);
+      } else {
+        node = randomNodeNotInChild(child);
+      }
+    }
+    child[len - 1] = node;
+
+    return child;
+  }
+
+  /** Get the cached adjacency matrix (may be dirty from last use). */
+  private static int[][] getAdjacencyMatrixInstance(int len) {
+    if (adjacencyMatrix == null || len != adjacencyMatrix.length) {
+      adjacencyMatrix = new int[len][];
+      for (int i = 0; i < len; i++) {
+        adjacencyMatrix[i] = new int[4];
+      }
+    }
+    return adjacencyMatrix;
+  }
+
+  /** Fill the adjacency matrix using two parent genes */
+  private static void fillAdjacencyMatrix(int[][] matrix, int[] parent1, int[] parent2) {
+    int len = matrix.length;
+    for (int i = 0; i < len; i++) {
+      int parent1Node = parent1[i];
+      int parent2Node = parent2[i];
+
+      int pos = i + 1;
+      if (pos >= len) {
+        pos -= len;
+      }
+      matrix[parent1Node][0] = parent1[pos];
+      matrix[parent2Node][1] = parent2[pos];
+
+      pos = i - 1;
+      if (pos < 0) {
+        pos += len;
+      }
+      matrix[parent1Node][2] = parent1[pos];
+      matrix[parent2Node][3] = parent2[pos];
+    }
+  }
+
+  /** Mark duplicate adjacent nodes as -1 in the matrix. */
+  private static void removeDuplicateAdjacentNodes(int[][] matrix) {
+    for (int i = 0; i < matrix.length; i++) {
+      for (int j = 0; j < 4; j++) {
+        int node = matrix[i][j];
+        if (node > -1) {
+          for (int c = j + 1; c < 4; c++) {
+            if (matrix[i][c] == node) {
+              matrix[i][c] = -1;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /** Remove every instance of node from the adjacency matrix. */
+  private static void removeFromAllNeighbours(int[][] matrix, int node) {
+    for (int i = 0; i < matrix.length; i++) {
+      for (int j = 0; j < 4; j++) {
+        if (matrix[i][j] == node) {
+          matrix[i][j] = -1;
+        }
+      }
+    }
+  }
+
+  /** Check if a list of neighbours has any valid ones. */
+  private static boolean hasNeighbours(int[] neighbours) {
+    for (int i = 0; i < neighbours.length; i++) {
+      if (neighbours[i] > -1) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Find the neighbour with the fewest neighbours. Pick a random one if more
+   * than one.
+   */
+  private static int neighbourWithFewestNeigbours(int[][] matrix, int node) {
+    // Let next node be neighbour of current node with fewest neighbors in
+    // its list
+    List<Integer> neighboursWithFewestNeighbours = new ArrayList<Integer>(4);
+    int fewestNeighbours = 4;
+    for (int i = 0; i < 4; i++) {
+      int neighbour = matrix[node][i];
+      if (neighbour > -1) {
+        // Count number of neighbours for this neighbour
+        int neighbourCount = 0;
+        for (int j = 0; j < 4; j++) {
+          if (matrix[neighbour][j] > -1) {
+            neighbourCount++;
+          }
+        }
+
+        if (neighbourCount == fewestNeighbours) {
+          neighboursWithFewestNeighbours.add(neighbour);
+        } else if (neighbourCount < fewestNeighbours) {
+          fewestNeighbours = neighbourCount;
+          neighboursWithFewestNeighbours.clear();
+          neighboursWithFewestNeighbours.add(neighbour);
+        }
+      }
+    }
+
+    int num = neighboursWithFewestNeighbours.size();
+    return neighboursWithFewestNeighbours.get(RNG.nextInt(num));
+  }
+
+  /**
+   * Pick a random node (assuming node values range between 0 - child.length)
+   * that is not already in the child gene.
+   * NOTE: If the child is already full of valid nodes this will loop forever
+   */
+  private static int randomNodeNotInChild(int[] child) {
+    int len = child.length;
+    int randomNode;
+    do {
+      randomNode = RNG.nextInt(len);
+    } while (contains(child, randomNode));
+    return randomNode;
+  }
+
+  /** Check if an array contains a value. */
+  private static boolean contains(int[] arr, int val) {
+    for (int i = 0; i < arr.length; i++) {
+      if (arr[i] == val) {
+        return true;
+      }
+    }
+    return false;
   }
 
 }

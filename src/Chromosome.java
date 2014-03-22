@@ -123,8 +123,8 @@ class Chromosome implements Comparable<Chromosome> {
     int startPos = RNG.nextInt(len);
     int endPos = startPos + RNG.nextInt(len - startPos);
 
-    int[] child1 = Operators.orderCrossover(parent1.cityList, parent2.cityList, startPos, endPos);
-    int[] child2 = Operators.orderCrossover(parent2.cityList, parent1.cityList, startPos, endPos);
+    int[] child1 = Operators.edgeRecombination(parent1.cityList, parent2.cityList);
+    int[] child2 = Operators.edgeRecombination(parent2.cityList, parent1.cityList);
     return new Children(child1, child2);
   }
 
