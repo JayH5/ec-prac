@@ -57,6 +57,26 @@ public final class Operators {
   }
 
   /**
+   * Move an element in the array by removing it, shifting up/down the other
+   * elements and then placing the element back in the array.
+   */
+  public static void move(int[] arr, int src, int dest) {
+    if (src == dest) {
+      return;
+    }
+
+    // Grab the element to be moved
+    int moved = arr[src];
+    // Shift others down or up
+    int shift = src < dest ? 1 : -1;
+    for (int i = src; i != dest; i+= shift) {
+      arr[i] = arr[i + shift];
+    }
+    // Place element in new position
+    arr[dest] = moved;
+  }
+
+  /**
    * Order crossover (OX-1)
    * A portion of one parent is mapped to a portion of the other parent. From
    * the replaced portion on, the rest is filled up by the remaining genes,
