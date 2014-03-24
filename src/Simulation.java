@@ -93,22 +93,25 @@ public class Simulation {
         convergenceHistory.remove();
       }
       convergenceHistory.add(result.cost);
-      if (convergenceHistory.size() == HISTORY_SIZE) {
-        double sum = 0;
-        for (double i : convergenceHistory) {
+      double sum = 0.0;
+      for (double i : convergenceHistory) {
           sum += i;
-        }
-        double avg = sum / convergenceHistory.size();
-        double sumOfSquares = -1;
-        for(double i : convergenceHistory) {
+      }
+      double avg = sum / convergenceHistory.size();
+      double sumOfSquares = -1;
+      for(double i : convergenceHistory) {
           double diff = Math.abs(i - avg);
           sumOfSquares += diff * diff;
+      }
+      double stdDev = Math.sqrt(sumOfSquares);
+      if(stdDev < 50) {
+        if(endCost != null) {
+          setStatus("Converged at generation " + generation + " with cost " +  intf.format(result.cost) + "; Rate: " + doubf.format(result.rate) + "Cost at 1000: " + intf.format(endCost));
+        } else {
+          setStatus("Converged at generation " + generation + " with cost " +  intf.format(result.cost) + "; Rate: " + doubf.format(result.rate));
         }
-        double stdDev = Math.sqrt(sumOfSquares);
-        if(stdDev < 50) {
-          //setStatus("Converged at generation " + generation + " with cost " +  intf.format(result.cost) + "; Rate: " + doubf.format(result.rate));
           result.convergenceGen = generation;
-        }
+          break;
       }
 
       //evolution rate calculation
@@ -117,7 +120,7 @@ public class Simulation {
         timingHistory.remove();
       }
       timingHistory.add(currentGenTime);
-      double sum = 0;
+      sum = 0;
       for (double i : timingHistory) {
         sum += i;
       }
@@ -272,7 +275,7 @@ public class Simulation {
     void onUpdate(String status);
   }
 
-  private static class RunResult {
+  public static class RunResult {
     public double rate = 0;
     public int convergenceGen = 0;
     public double cost = 0;
@@ -286,6 +289,10 @@ public class Simulation {
       this.convergenceGen /= factor;
       this.cost /= factor;
     }
+    public String toString() {
+      return "RunResult Cost: " + cost;
+    }
   }
 
 }
+// vim: ts=2:sw=2

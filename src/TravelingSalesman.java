@@ -90,7 +90,18 @@ public class TravelingSalesman extends Applet implements Simulation.Listener {
     ctrlMagic.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        startThreadFromUI();
+        ExecutorService ex = Executors.newFixedThreadPool(4);
+        for(int i = 0; i < 16; i++) {
+          final int x = i;
+          ex.execute(new Runnable() {
+            public void run() {
+              Simulation.RunResult r = new Simulation(50, 1000, 100 + x*50).simulate();
+              System.out.println((100 + x*50) + ": " + r.cost);
+            }
+          });
+        }
+        ex.shutdown();
+        System.out.println("Done");
       }
     });
 
@@ -125,9 +136,6 @@ public class TravelingSalesman extends Applet implements Simulation.Listener {
     if (simulation != null) {
       simulation.stop();
     }
-
-    FontMetrics fm = getGraphics().getFontMetrics();
-    int bottom = ctrlButtons.getBounds().y - fm.getHeight() - 2;
 
     simulation = new Simulation(citCount, population, poolsize);
     simulation.setListener(this);
