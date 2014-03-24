@@ -192,6 +192,9 @@ public class Simulation {
         int[] c1 = edgeRecombination.crossover(p1, p2);
         int[] c2 = edgeRecombination.crossover(p2, p1);
 
+        mutate(c1);
+        mutate(c2);
+
         Chromosome child1 = new Chromosome(c1);
         Chromosome child2 = new Chromosome(c2);
 
@@ -216,22 +219,20 @@ public class Simulation {
     }
   }
 
-  private void mutate(Chromosome chromosome) {
+  private void mutate(int[] child) {
     if (rand.nextFloat() <= CHANCE_MUTATION) {
-      int[] cityList = chromosome.getCityList();
+      int len = child.length;
       /*
       if(rand.nextFloat() <= 0.5) {
-        int len = cityList.length;
         int startPos = rand.nextInt(len);
         int endPos = rand.nextInt(len);
-        Operators.swap(cityList, startPos, endPos);
+        Operators.swap(child, startPos, endPos);
       }
       */
       //if(rand.nextFloat() <= 0.5) {
-        int len = cityList.length;
         int startPos = rand.nextInt(len);
         int endPos = rand.nextInt(len);
-        Operators.invert(cityList, startPos, endPos);
+        Operators.invert(child, startPos, endPos);
       //}
     }
   }
