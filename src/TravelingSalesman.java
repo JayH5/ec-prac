@@ -156,10 +156,10 @@ public class TravelingSalesman extends Applet implements Runnable {
 
     try {
       populationSize = Integer.parseInt(ctrlPopulationSize.getText());
-      minParentPoolSize = 70;//500;//(int) (0.6 * populationSize);//(int)(0.15 * populationSize * cityCount/70.0);
     } catch (NumberFormatException e) {
       populationSize = 1000;
     }
+    minParentPoolSize = 500;
     startThread(cityCount, populationSize, minParentPoolSize);
   }
 
@@ -419,7 +419,7 @@ public class TravelingSalesman extends Applet implements Runnable {
     return result;
   }
 
-  private class RunResult {
+  private static class RunResult {
     public double rate = 0;
     public int convergenceGen = 0;
     public double cost = 0;
