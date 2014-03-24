@@ -106,9 +106,8 @@ public class Simulation {
         }
         double stdDev = Math.sqrt(sumOfSquares);
         if(stdDev < 50) {
-          setStatus("Converged at generation " + generation + " with cost " +  intf.format(result.cost) + "; Rate: " + doubf.format(result.rate));
+          //setStatus("Converged at generation " + generation + " with cost " +  intf.format(result.cost) + "; Rate: " + doubf.format(result.rate));
           result.convergenceGen = generation;
-          return result;
         }
       }
 
@@ -128,12 +127,11 @@ public class Simulation {
         endCost = result.cost;
       }
       if(endCost != null) {
-        setStatus("Generation " + generation + " Cost " + intf.format(result.cost) + " Rate " + doubf.format(result.rate) + "Cost at 1000: " + intf.format(endCost));
+        setStatus("Generation " + generation + " Cost " + intf.format(result.cost) + " Rate " + doubf.format(result.rate) + " Cost at 1000: " + intf.format(endCost));
       } else {
         setStatus("Generation " + generation + " Cost " + intf.format(result.cost) + " Rate " + doubf.format(result.rate));
       }
     }
-    setStatus("Ran out of generations at " + generation + ". Cost " + intf.format(result.cost) + " Rate " + doubf.format(result.rate));
     return result;
   }
 
