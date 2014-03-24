@@ -22,7 +22,7 @@ class Chromosome implements Comparable<Chromosome> {
   /**
    * Chance that a given child will be mutated.
    */
-  private static final float CHANCE_MUTATION = .2f;
+  private static final float CHANCE_MUTATION = .25f;
 
   /**
    * @param cities The order that this chromosome would
@@ -131,10 +131,20 @@ class Chromosome implements Comparable<Chromosome> {
   /** Mutates the chromosome by randomly swapping two city indices. */
   public void mutate() {
     if (RNG.nextFloat() <= CHANCE_MUTATION) {
-      int len = cityList.length;
-      int startPos = RNG.nextInt(len);
-      int endPos = startPos + RNG.nextInt(len - startPos);
-      Operators.swap(cityList, startPos, endPos);
+      /*
+      if(RNG.nextFloat() <= 0.5) {
+        int len = cityList.length;
+        int startPos = RNG.nextInt(len);
+        int endPos = RNG.nextInt(len);
+        Operators.swap(cityList, startPos, endPos);
+      }
+      */
+      //if(RNG.nextFloat() <= 0.5) {
+        int len = cityList.length;
+        int startPos = RNG.nextInt(len);
+        int endPos = RNG.nextInt(len);
+        Operators.invert(cityList, startPos, endPos);
+      //}
     }
   }
 
@@ -169,3 +179,4 @@ class Chromosome implements Comparable<Chromosome> {
   }
 
 }
+// vim: ts=2:sw=2

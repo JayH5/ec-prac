@@ -15,7 +15,9 @@ public final class Operators {
     arr[j] = tmp;
   }
 
-  public static void invert(int[] arr, int start, int end) {
+  public static void invert(int[] arr, int x, int y) {
+    int start = Math.min(x, y);
+    int end = Math.max(x, y);
     int half = (end - start) / 2;
     for (int i = 0; i < half; i++) {
       swap(arr, start + i, end - i);
@@ -93,7 +95,7 @@ public final class Operators {
 
     // Copy in remaining points from parent 2
     int insertPos = 0;
-    outer:
+outer:
     for (int i = 0; i < len; i++) {
       // Skip past those points copied from parent 1
       if (insertPos == startPos) {
@@ -283,3 +285,4 @@ public final class Operators {
   }
 
 }
+// vim: ts=2:sw=2

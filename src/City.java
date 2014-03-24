@@ -1,7 +1,7 @@
 class City {
 
-  private static final int WINDOW_WIDTH = 630; //getBounds().width - 10
-  private static final int WINDOW_HEIGHT = 412; //ctrlButtons.getBounds().y - fm.getHeight() - 2
+  private static final int WINDOW_WIDTH = 440;//630; //getBounds().width - 10
+  private static final int WINDOW_HEIGHT = 262;//330;//412; //ctrlButtons.getBounds().y - fm.getHeight() - 2
 
   /**
    * The city's x position.

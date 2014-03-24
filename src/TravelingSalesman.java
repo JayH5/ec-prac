@@ -94,14 +94,25 @@ public class TravelingSalesman extends Applet implements Runnable {
    */
   private String status = "";
 
+  /**
+   * Signal the thread to end.
+   */
+  private boolean stop = false;
+
+  /**
+   * The cost at END_GEN generations; the simulation keeps going, but this value is recorded.
+   */
+  private Double endCost;
+
+  private int END_GEN = 1000;
+
   private Queue<Double> convergenceHistory;
   private Queue<Long> timingHistory;
 
-  private int HISTORY_SIZE = 100;
+  private int HISTORY_SIZE = 200;
 
   private final Random random = new Random(System.currentTimeMillis());
 
-  //private static final int MIN_PARENT_POOL_SIZE = 80;
   private Integer minParentPoolSize = null;
   private static final int ELITISM = 0;
 
@@ -148,26 +159,37 @@ public class TravelingSalesman extends Applet implements Runnable {
    * Start the background thread.
    */
   private void startThreadFromUI() {
+    int cities = 0;
     try {
-      cityCount = Integer.parseInt(ctrlCities.getText());
+      cities = Integer.parseInt(ctrlCities.getText());
     } catch (NumberFormatException e) {
-      cityCount = 50;
+      cities = 50;
     }
 
+    int population = 0;
     try {
-      populationSize = Integer.parseInt(ctrlPopulationSize.getText());
+      population = Integer.parseInt(ctrlPopulationSize.getText());
     } catch (NumberFormatException e) {
-      populationSize = 1000;
+      population = 1000;
     }
     minParentPoolSize = 500;
-    startThread(cityCount, populationSize, minParentPoolSize);
+    startThread(cities, population, minParentPoolSize);
   }
 
   private void startThread(int citCount, int population, int poolsize) {
+    if (worker != null) {
+      stop = true;
+      try {
+        worker.join();
+      } catch(InterruptedException e) {
+        throw new Error("Zomg!");
+      }
+    }
     cityCount = citCount;
 
     populationSize = population;
     minParentPoolSize = poolsize;
+    endCost = null;
 
     FontMetrics fm = getGraphics().getFontMetrics();
     int bottom = ctrlButtons.getBounds().y - fm.getHeight() - 2;
@@ -199,9 +221,6 @@ public class TravelingSalesman extends Applet implements Runnable {
 
     generation = 0;
 
-    if (worker != null) { // Lol
-      worker = null;
-    }
     worker = new Thread(this);
     worker.setPriority(Thread.MIN_PRIORITY);
     worker.start();
@@ -322,6 +341,10 @@ public class TravelingSalesman extends Applet implements Runnable {
     }
 
     for (; generation <= maxGenerations; generation++) {
+      if(stop) {
+        stop = false;
+        return result;
+      }
       genStartTime = System.currentTimeMillis();
       parentPool.clear();
       while (parentPool.size() < poolSize) {
@@ -385,7 +408,11 @@ public class TravelingSalesman extends Applet implements Runnable {
         double stdDev = Math.sqrt(sumOfSquares);
         if(stdDev < 50) {
           if(graphical) {
-            setStatus("Converged at generation " + generation + " with cost " +  intf.format(result.cost) + "; Rate: " + doubf.format(result.rate));
+            if(endCost != null) {
+              setStatus("Converged at generation " + generation + " with cost " +  intf.format(result.cost) + "; Rate: " + doubf.format(result.rate));
+            } else {
+              setStatus("Converged at generation " + generation + " with cost " +  intf.format(result.cost) + "; Rate: " + doubf.format(result.rate)  + "Cost at 1000: " + intf.format(endCost));
+            }
             update();
           }
           result.convergenceGen = generation;
@@ -399,16 +426,21 @@ public class TravelingSalesman extends Applet implements Runnable {
         timingHistory.remove();
       }
       timingHistory.add(currentGenTime);
-      if(timingHistory.size() == HISTORY_SIZE) {
-        double sum = 0;
-        for(double i : timingHistory) {
-          sum += i;
-        }
-        result.rate = (HISTORY_SIZE * 1000.0) / sum;
+      double sum = 0;
+      for(double i : timingHistory) {
+        sum += i;
       }
+      result.rate = (timingHistory.size() * 1000.0) / sum;
 
+      if(generation == 1000) {
+        endCost = result.cost;
+      }
       if(graphical) {
-        setStatus("Generation " + generation + " Cost " + intf.format(result.cost) + " Rate " + doubf.format(result.rate));
+        if(endCost != null) {
+          setStatus("Generation " + generation + " Cost " + intf.format(result.cost) + " Rate " + doubf.format(result.rate) + "Cost at 1000: " + intf.format(endCost));
+        } else {
+          setStatus("Generation " + generation + " Cost " + intf.format(result.cost) + " Rate " + doubf.format(result.rate));
+        }
         update();
       }
     }
@@ -432,6 +464,14 @@ public class TravelingSalesman extends Applet implements Runnable {
       this.rate /= factor;
       this.convergenceGen /= factor;
       this.cost /= factor;
+    }
+  }
+
+  private static String nullableToString(Object a) {
+    if(a == null) {
+      return "";
+    } else {
+      return a.toString();
     }
   }
 }
