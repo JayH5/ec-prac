@@ -127,7 +127,7 @@ public final class Operators {
       child[i] = node;
       removeFromAllNeighbours(matrix, node);
 
-      if (hasNeighbours(matrix[node])) {
+      if (hasNeighbours(matrix, node)) {
         node = neighbourWithFewestNeigbours(matrix, node);
       } else {
         node = randomNodeNotInChild(child);
@@ -143,7 +143,7 @@ public final class Operators {
     if (adjacencyMatrix == null || len != adjacencyMatrix.length) {
       adjacencyMatrix = new int[len][];
       for (int i = 0; i < len; i++) {
-        adjacencyMatrix[i] = new int[4];
+        adjacencyMatrix[i] = new int[5];
       }
     }
     return adjacencyMatrix;
@@ -169,6 +169,9 @@ public final class Operators {
       }
       matrix[parent1Node][2] = parent1[pos];
       matrix[parent2Node][3] = parent2[pos];
+
+      // Optimization: use the 5th element to store the number of neighbours
+      matrix[i][4] = 4;
     }
   }
 
@@ -181,6 +184,7 @@ public final class Operators {
           for (int c = j + 1; c < 4; c++) {
             if (matrix[i][c] == node) {
               matrix[i][c] = -1;
+              matrix[i][4]--;
             }
           }
         }
@@ -194,19 +198,15 @@ public final class Operators {
       for (int j = 0; j < 4; j++) {
         if (matrix[i][j] == node) {
           matrix[i][j] = -1;
+          matrix[i][4]--;
         }
       }
     }
   }
 
   /** Check if a list of neighbours has any valid ones. */
-  private static boolean hasNeighbours(int[] neighbours) {
-    for (int i = 0; i < neighbours.length; i++) {
-      if (neighbours[i] > -1) {
-        return true;
-      }
-    }
-    return false;
+  private static boolean hasNeighbours(int[][] matrix, int node) {
+    return matrix[node][4] > 0;
   }
 
   /**
@@ -221,13 +221,8 @@ public final class Operators {
     for (int i = 0; i < 4; i++) {
       int neighbour = matrix[node][i];
       if (neighbour > -1) {
-        // Count number of neighbours for this neighbour
-        int neighbourCount = 0;
-        for (int j = 0; j < 4; j++) {
-          if (matrix[neighbour][j] > -1) {
-            neighbourCount++;
-          }
-        }
+        // Get number of neighbours for this neighbour
+        int neighbourCount = matrix[neighbour][4];
 
         if (neighbourCount == fewestNeighbours) {
           neighboursWithFewestNeighbours.add(neighbour);
