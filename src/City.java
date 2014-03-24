@@ -1,14 +1,17 @@
 class City {
 
+  private static final int WINDOW_WIDTH = 630; //getBounds().width - 10
+  private static final int WINDOW_HEIGHT = 412; //ctrlButtons.getBounds().y - fm.getHeight() - 2
+
   /**
    * The city's x position.
    */
-  private int xpos;
+  private double xpos;
 
   /**
    * The city's y position.
    */
-  private int ypos;
+  private double ypos;
 
   /**
    * Constructor.
@@ -16,7 +19,7 @@ class City {
    * @param x The city's x position
    * @param y The city's y position.
    */
-  public City(int x, int y) {
+  public City(double x, double y) {
     xpos = x;
     ypos = y;
   }
@@ -26,7 +29,7 @@ class City {
    *
    * @return The city's x position.
    */
-  public int getx() {
+  public double getx() {
     return xpos;
   }
 
@@ -35,8 +38,16 @@ class City {
    *
    * @return The city's y position.
    */
-  public int gety() {
+  public double gety() {
     return ypos;
+  }
+
+  public int getProjectedX(int width) {
+    return (int)(xpos * width);
+  }
+
+  public int getProjectedY(int height) {
+    return (int)(ypos * height);
   }
 
   /**
@@ -58,10 +69,11 @@ class City {
    * @param y The y coordinate
    * @return The distance.
    */
-  public double proximity(int x, int y) {
-    int xdiff = xpos - x;
-    int ydiff = ypos - y;
+  public double proximity(double x, double y) {
+    double xdiff = (WINDOW_WIDTH * xpos) - (WINDOW_WIDTH * x);
+    double ydiff = (WINDOW_HEIGHT * ypos) - (WINDOW_HEIGHT * y);
     // TODO: Save a sqrt today
     return Math.sqrt(xdiff * xdiff + ydiff * ydiff);
   }
 }
+// vim: ts=2:sw=2
