@@ -193,8 +193,16 @@ public class Simulation {
         int[] p1 = parent1.getCityList();
         int[] p2 = parent2.getCityList();
 
-        int[] c1 = edgeRecombination.crossover(p1, p2);
-        int[] c2 = edgeRecombination.crossover(p2, p1);
+        int startPos = rand.nextInt(cityCount);
+        int endPos = rand.nextInt(cityCount);
+        if (startPos > endPos) {
+          int tmp = startPos;
+          startPos = endPos;
+          endPos = tmp;
+        }
+
+        int[] c1 = Operators.orderCrossover(p1, p2, startPos, endPos);
+        int[] c2 = Operators.orderCrossover(p2, p1, startPos, endPos);
 
         mutate(c1);
         mutate(c2);
@@ -236,7 +244,7 @@ public class Simulation {
       //if(rand.nextFloat() <= 0.5) {
         int startPos = rand.nextInt(len);
         int endPos = rand.nextInt(len);
-        Operators.invert(child, startPos, endPos);
+        Operators.swap(child, startPos, endPos);
       //}
       /*
          multi-swap mutation
