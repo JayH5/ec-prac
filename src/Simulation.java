@@ -117,6 +117,12 @@ public class Simulation {
         }
       }
 
+      double min = 999999999.0;//chromosomes[0].getCost();
+      for(Chromosome c: chromosomes) {
+        if(c.getCost() < min) min = c.getCost();
+      }
+      System.out.print(min + ", ");
+
       //evolution rate calculation
       long currentGenTime = System.currentTimeMillis() - genStartTime;
       if(timingHistory.size() == HISTORY_SIZE) {

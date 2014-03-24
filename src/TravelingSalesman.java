@@ -100,7 +100,7 @@ public class TravelingSalesman extends Applet implements Simulation.Listener {
           ex.execute(new Runnable() {
             public void run() {
               Simulation.RunResult r = new Simulation(cities, population, parentPoolSize).simulate();
-              System.out.println(r.cost);
+              System.out.println();
             }
           });
         }
