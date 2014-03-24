@@ -136,7 +136,7 @@ class Chromosome implements Comparable<Chromosome> {
         int len = cityList.length;
         int startPos = RNG.nextInt(len);
         int endPos = RNG.nextInt(len);
-        Operators.swap(cityList, startPos, endPos);
+        Operators.move(cityList, startPos, endPos);
       }
       */
       //if(RNG.nextFloat() <= 0.5) {
@@ -145,6 +145,25 @@ class Chromosome implements Comparable<Chromosome> {
         int endPos = RNG.nextInt(len);
         Operators.invert(cityList, startPos, endPos);
       //}
+      /*
+         multi-swap mutation
+        int len = cityList.length;
+        int x = RNG.nextInt(len);
+        int y = RNG.nextInt(len);
+        int z = RNG.nextInt(len);
+
+        int a = Math.min(x, Math.min(y, z));
+        int c = Math.max(x, Math.max(y, z));
+        int b = Math.min(Math.max(x,y), Math.min(Math.max(y,z), Math.max(x,z)));
+
+        Integer intEnd = null;
+        Integer dest = null;
+        if(RNG.nextBoolean()) {
+          Operators.multiMove(cityList, a, b, c);
+        } else {
+          Operators.multiMove(cityList, b, c, a);
+        }
+        */
     }
   }
 

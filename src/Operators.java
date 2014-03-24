@@ -78,6 +78,67 @@ public final class Operators {
     arr[dest] = moved;
   }
 
+  public static void multiMove(int[] arr, int srcI, int srcJ, int dest) {
+    int srcStart = Math.min(srcI, srcJ);
+    int srcEnd = Math.max(srcI, srcJ);
+    Boolean movingLeft = null; //boolean my ass :P
+    if(dest < srcStart) movingLeft = true;
+    else if(dest == srcStart) return;
+    else if(dest < srcEnd) throw new IllegalArgumentException("Destination must not be within source interval");
+    else if(dest == srcEnd) return;
+    else movingLeft = false;
+
+    //interval to be moved
+    int movedSize = srcEnd - srcStart;
+    int[] moved = new int[movedSize];
+    for(int i = 0; i < movedSize; i++) {
+      moved[i] = arr[srcStart + i];
+    }
+    int movedTarget = -1;
+    int shiftedTarget = -1;
+    int shifted[];
+    if(movingLeft) {
+      int shiftedSize = srcStart - dest;
+      shifted = new int[shiftedSize];
+      for(int i = 0; i < shiftedSize; i++) {
+       shifted[i] = arr[dest + i];
+      }
+      movedTarget = dest;
+      shiftedTarget = dest + movedSize;
+    } else {
+      int shiftedSize = dest - srcEnd;
+      shifted = new int[shiftedSize];
+      for(int i = 0; i < shiftedSize; i++) {
+       shifted[i] = arr[srcEnd + i];
+      }
+      movedTarget = dest - movedSize;
+      shiftedTarget = srcStart;
+    }
+    for(int i = 0; i < moved.length; i++) {
+      arr[movedTarget + i] = moved[i];
+    }
+    for(int i = 0; i < shifted.length; i++) {
+      arr[shiftedTarget + i] = shifted[i];
+    }
+    /*
+    if(movingLeft) {
+      for(int i = 0; i < srcStart - dest; i++) {
+        arr[srcEnd -i] = arr[srcStart - i];
+      }
+      for(int i = 0; i < moved.length; i++) {
+        arr[dest + i] = moved[i];
+      }
+    } else {
+      for(int i = 0; i < dest - srcEnd; i++) {
+        arr[srcStart + i] = arr[srcEnd + i];
+      }
+      for(int i = 0; i < moved.length; i++) {
+        arr[dest - i] = moved[moved.length -1 - i];
+      }
+    }
+    */
+  }
+
   /**
    * Order crossover (OX-1)
    * A portion of one parent is mapped to a portion of the other parent. From

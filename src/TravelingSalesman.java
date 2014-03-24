@@ -406,12 +406,12 @@ public class TravelingSalesman extends Applet implements Runnable {
           sumOfSquares += diff * diff;
         }
         double stdDev = Math.sqrt(sumOfSquares);
-        if(stdDev < 50) {
+        if(stdDev < 50) { //we've converged!
           if(graphical) {
             if(endCost != null) {
-              setStatus("Converged at generation " + generation + " with cost " +  intf.format(result.cost) + "; Rate: " + doubf.format(result.rate));
-            } else {
               setStatus("Converged at generation " + generation + " with cost " +  intf.format(result.cost) + "; Rate: " + doubf.format(result.rate)  + "Cost at 1000: " + intf.format(endCost));
+            } else {
+              setStatus("Converged at generation " + generation + " with cost " +  intf.format(result.cost) + "; Rate: " + doubf.format(result.rate));
             }
             update();
           }
