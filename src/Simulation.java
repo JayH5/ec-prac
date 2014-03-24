@@ -19,6 +19,7 @@ public class Simulation {
 
   private static final int GENERATIONS = 1000;
   private static final int HISTORY_SIZE = 200;
+  private static boolean DETECT_CONVERGENCE = false;
 
   private Listener listener;
 
@@ -88,30 +89,32 @@ public class Simulation {
       Arrays.sort(chromosomes);
       result.cost = chromosomes[0].getCost();
 
-      //convergence detection
-      if (convergenceHistory.size() == HISTORY_SIZE) {
-        convergenceHistory.remove();
-      }
-      convergenceHistory.add(result.cost);
-      double sum = 0.0;
-      for (double i : convergenceHistory) {
+      if(DETECT_CONVERGENCE) {
+        //convergence detection
+        if (convergenceHistory.size() == HISTORY_SIZE) {
+          convergenceHistory.remove();
+        }
+        convergenceHistory.add(result.cost);
+        double sum = 0.0;
+        for (double i : convergenceHistory) {
           sum += i;
-      }
-      double avg = sum / convergenceHistory.size();
-      double sumOfSquares = -1;
-      for(double i : convergenceHistory) {
+        }
+        double avg = sum / convergenceHistory.size();
+        double sumOfSquares = -1;
+        for(double i : convergenceHistory) {
           double diff = Math.abs(i - avg);
           sumOfSquares += diff * diff;
-      }
-      double stdDev = Math.sqrt(sumOfSquares);
-      if(stdDev < 50) {
-        if(endCost != null) {
-          setStatus("Converged at generation " + generation + " with cost " +  intf.format(result.cost) + "; Rate: " + doubf.format(result.rate) + "Cost at 1000: " + intf.format(endCost));
-        } else {
-          setStatus("Converged at generation " + generation + " with cost " +  intf.format(result.cost) + "; Rate: " + doubf.format(result.rate));
         }
+        double stdDev = Math.sqrt(sumOfSquares);
+        if(stdDev < 50) {
+          if(endCost != null) {
+            setStatus("Converged at generation " + generation + " with cost " +  intf.format(result.cost) + "; Rate: " + doubf.format(result.rate) + "Cost at 1000: " + intf.format(endCost));
+          } else {
+            setStatus("Converged at generation " + generation + " with cost " +  intf.format(result.cost) + "; Rate: " + doubf.format(result.rate));
+          }
           result.convergenceGen = generation;
           break;
+        }
       }
 
       //evolution rate calculation
@@ -120,7 +123,7 @@ public class Simulation {
         timingHistory.remove();
       }
       timingHistory.add(currentGenTime);
-      sum = 0;
+      double sum = 0;
       for (double i : timingHistory) {
         sum += i;
       }

@@ -90,13 +90,17 @@ public class TravelingSalesman extends Applet implements Simulation.Listener {
     ctrlMagic.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
+        final int cities = 100;
+        final int population = 1000;
+        final int parentPoolSize = 500;
+        System.out.println("Running simulation for " + cities + " cities, " + population + " population, " + parentPoolSize + " parent pool size");
         ExecutorService ex = Executors.newFixedThreadPool(4);
-        for(int i = 0; i < 16; i++) {
+        for(int i = 0; i < 50; i++) {
           final int x = i;
           ex.execute(new Runnable() {
             public void run() {
-              Simulation.RunResult r = new Simulation(50, 1000, 100 + x*50).simulate();
-              System.out.println((100 + x*50) + ": " + r.cost);
+              Simulation.RunResult r = new Simulation(cities, population, parentPoolSize).simulate();
+              System.out.println(r.cost);
             }
           });
         }
