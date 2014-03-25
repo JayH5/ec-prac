@@ -108,20 +108,5 @@ class Chromosome implements Comparable<Chromosome> {
     return "Chromosome " + Arrays.toString(cityList) + " with cost = " + cost;
   }
 
-  public static class Children {
-    final Chromosome child1;
-    final Chromosome child2;
-
-    Children(int[] child1, int[] child2) {
-      this.child1 = new Chromosome(child1);
-      this.child2 = new Chromosome(child2);
-    }
-
-    void calculateCost(City[] cities) {
-      child1.calculateCost(cities);
-      child2.calculateCost(cities);
-    }
-  }
-
 }
 // vim: ts=2:sw=2

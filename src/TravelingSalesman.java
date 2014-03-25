@@ -5,8 +5,6 @@ import java.text.*;
 import javax.swing.SwingUtilities;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
-import java.io.StringWriter;
-import java.io.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -51,12 +49,7 @@ public class TravelingSalesman extends Applet implements Simulation.Listener {
    */
   private String status = "";
 
-  private int END_GEN = 1000;
-
-  private int HISTORY_SIZE = 200;
-
   private Integer minParentPoolSize = null;
-  private static final int ELITISM = 0;
 
   private Simulation simulation;
 
@@ -70,7 +63,7 @@ public class TravelingSalesman extends Applet implements Simulation.Listener {
     // setup the controls
     ctrlButtons = new Panel();
     ctrlStart = new Button("Start");
-    ctrlMagic = new Button("Magic");
+    ctrlMagic = new Button("Stats run");
     ctrlButtons.add(ctrlStart);
     ctrlButtons.add(new Label("# Cities:"));
     ctrlButtons.add(ctrlCities = new TextField(5));
@@ -97,7 +90,8 @@ public class TravelingSalesman extends Applet implements Simulation.Listener {
         final int cities = 200;
         final int population = 1000;
         final int parentPoolSize = 500;
-        System.out.println("Running simulation for " + cities + " cities, " + population + " population, " + parentPoolSize + " parent pool size");
+        System.out.println("Running simulation for " + cities + " cities, " + population
+            + " population, " + parentPoolSize + " parent pool size");
         ExecutorService ex = Executors.newFixedThreadPool(1);
         int repeats = 50;
         for(int i = 0; i < repeats; i++) {
@@ -112,14 +106,9 @@ public class TravelingSalesman extends Applet implements Simulation.Listener {
         try {
           ex.awaitTermination(24, TimeUnit.HOURS);
         } catch(InterruptedException exc) {
-          System.out.println("FUCK");
+          exc.printStackTrace();
         }
         System.out.println("Done");
-        /*
-        for(StringWriter sw: sws) {
-          System.out.println(sw.toString());
-        }
-        */
       }
     });
 

@@ -108,20 +108,21 @@ public class Simulation {
         double stdDev = Math.sqrt(sumOfSquares);
         if(stdDev < 50) {
           if(endCost != null) {
-            setStatus("Converged at generation " + generation + " with cost " +  intf.format(result.cost) + "; Rate: " + doubf.format(result.rate) + "Cost at 1000: " + intf.format(endCost));
+            setStatus("Converged at generation " + generation + " with cost "
+                +  intf.format(result.cost) + "; Rate: " + doubf.format(result.rate)
+                + "Cost at 1000: " + intf.format(endCost));
           } else {
-            setStatus("Converged at generation " + generation + " with cost " +  intf.format(result.cost) + "; Rate: " + doubf.format(result.rate));
+            setStatus("Converged at generation " + generation + " with cost "
+                +  intf.format(result.cost) + "; Rate: " + doubf.format(result.rate));
           }
           result.convergenceGen = generation;
           break;
         }
       }
 
-      double min = 999999999.0;//chromosomes[0].getCost();
-      for(Chromosome c: chromosomes) {
-        if(c.getCost() < min) min = c.getCost();
-      }
-      System.out.print(min + ", ");
+
+      // Print CSV to stdout
+      //System.out.print(chromosomes[0].getCost() + ", ");
 
       //evolution rate calculation
       long currentGenTime = System.currentTimeMillis() - genStartTime;
@@ -139,9 +140,11 @@ public class Simulation {
         endCost = result.cost;
       }
       if(endCost != null) {
-        setStatus("Generation " + generation + " Cost " + intf.format(result.cost) + " Rate " + doubf.format(result.rate) + " Cost at 1000: " + intf.format(endCost));
+        setStatus("Generation " + generation + " Cost " + intf.format(result.cost)
+            + " Rate " + doubf.format(result.rate) + " Cost at 1000: " + intf.format(endCost));
       } else {
-        setStatus("Generation " + generation + " Cost " + intf.format(result.cost) + " Rate " + doubf.format(result.rate));
+        setStatus("Generation " + generation + " Cost " + intf.format(result.cost) + " Rate "
+            + doubf.format(result.rate));
       }
     }
     return result;
@@ -199,8 +202,29 @@ public class Simulation {
         int[] p1 = parent1.getCityList();
         int[] p2 = parent2.getCityList();
 
+        /*
+         * EDGE RECOMBINATION
+         * Comment to disable edge recombination
+         */
         int[] c1 = edgeRecombination.crossover(p1, p2);
         int[] c2 = edgeRecombination.crossover(p2, p1);
+        /* EDGE RECOMBINATION */
+
+        /*
+         * ORDER CROSSOVER (OX-1)
+         * Uncomment to enable
+         *
+        int len = p1.length;
+        int startPos = rand.nextInt(len);
+        int endPos = rand.nextInt(len);
+        if (startPos > endPos) {
+          int tmp = startPos;
+          startPos = endPos;
+          endPos = tmp;
+        }
+        int[] c1 = Operators.orderCrossover(p1, p2, startPos, endPos);
+        int[] c2 = Operators.orderCrossover(p2, p1, startPos, endPos);
+        /* ORDER CROSSOVER */
 
         mutate(c1);
         mutate(c2);
@@ -233,17 +257,20 @@ public class Simulation {
     if (rand.nextFloat() <= CHANCE_MUTATION) {
       int len = child.length;
       /*
-      if(rand.nextFloat() <= 0.5) {
-        int startPos = rand.nextInt(len);
-        int endPos = rand.nextInt(len);
-        Operators.swap(child, startPos, endPos);
-      }
-      */
-      //if(rand.nextFloat() <= 0.5) {
-        int startPos = rand.nextInt(len);
-        int endPos = rand.nextInt(len);
-        Operators.invert(child, startPos, endPos);
-      //}
+       * SWAP MUTATOR
+       * Uncomment to enable swap mutator
+       *
+      int startPos = rand.nextInt(len);
+      int endPos = rand.nextInt(len);
+      Operators.swap(child, startPos, endPos);
+
+      /*
+       * INVERT MUTATOR
+       * Comment to disable invert mutator
+       */
+      int startPos = rand.nextInt(len);
+      int endPos = rand.nextInt(len);
+      Operators.invert(child, startPos, endPos);
       /*
          multi-swap mutation
         int len = cityList.length;

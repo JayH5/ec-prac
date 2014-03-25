@@ -5,8 +5,6 @@ import java.util.Random;
 
 public final class Operators {
 
-  private static final Random RNG = new Random(System.currentTimeMillis());
-
   private static int[][] adjacencyMatrix;
 
   public static void swap(int[] arr, int i, int j) {
@@ -120,23 +118,6 @@ public final class Operators {
     for(int i = 0; i < shifted.length; i++) {
       arr[shiftedTarget + i] = shifted[i];
     }
-    /*
-    if(movingLeft) {
-      for(int i = 0; i < srcStart - dest; i++) {
-        arr[srcEnd -i] = arr[srcStart - i];
-      }
-      for(int i = 0; i < moved.length; i++) {
-        arr[dest + i] = moved[i];
-      }
-    } else {
-      for(int i = 0; i < dest - srcEnd; i++) {
-        arr[srcStart + i] = arr[srcEnd + i];
-      }
-      for(int i = 0; i < moved.length; i++) {
-        arr[dest - i] = moved[moved.length -1 - i];
-      }
-    }
-    */
   }
 
   /**
