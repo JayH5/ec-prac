@@ -5,6 +5,9 @@ import java.text.*;
 import javax.swing.SwingUtilities;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
+import java.io.StringWriter;
+import java.io.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class implements the Traveling Salesman problem
@@ -59,6 +62,7 @@ public class TravelingSalesman extends Applet implements Simulation.Listener {
 
   private ExecutorService executorService;
 
+
   @Override
   public void init() {
     setLayout(new BorderLayout());
@@ -90,12 +94,13 @@ public class TravelingSalesman extends Applet implements Simulation.Listener {
     ctrlMagic.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        final int cities = 100;
+        final int cities = 200;
         final int population = 1000;
         final int parentPoolSize = 500;
         System.out.println("Running simulation for " + cities + " cities, " + population + " population, " + parentPoolSize + " parent pool size");
-        ExecutorService ex = Executors.newFixedThreadPool(4);
-        for(int i = 0; i < 50; i++) {
+        ExecutorService ex = Executors.newFixedThreadPool(1);
+        int repeats = 50;
+        for(int i = 0; i < repeats; i++) {
           final int x = i;
           ex.execute(new Runnable() {
             public void run() {
@@ -104,8 +109,17 @@ public class TravelingSalesman extends Applet implements Simulation.Listener {
             }
           });
         }
-        ex.shutdown();
+        try {
+          ex.awaitTermination(24, TimeUnit.HOURS);
+        } catch(InterruptedException exc) {
+          System.out.println("FUCK");
+        }
         System.out.println("Done");
+        /*
+        for(StringWriter sw: sws) {
+          System.out.println(sw.toString());
+        }
+        */
       }
     });
 
